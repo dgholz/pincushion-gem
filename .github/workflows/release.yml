@@ -34,6 +34,11 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.github_token }}
       run: |
+        exec 19> >( sed -e's/^/::debug::/g' )
+        BASH_XTRACEFD=19
+        export DEBUG=api
+        set -x
+
         this_version="$( bundle exec rake show-gem-version )"
         last_gh_release="$( gh api repos/'{owner}'/'{repo}'/releases/latest 2>/dev/null | jq --raw-output .name )"
         if [ "$last_gh_release" = 'null' ]
