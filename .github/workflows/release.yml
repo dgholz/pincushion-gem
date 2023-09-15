@@ -1,0 +1,70 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  rspec:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.1.4
+        bundler-cache: true
+    - run: bundle exec rake spec
+
+  release:
+    runs-on: ubuntu-latest
+    needs: rspec
+    permissions:
+      contents: write
+      packages: write
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.1.4
+        bundler-cache: true
+    - run: bundle exec rake build
+    - name: Check for unreleased changes
+      id: check-changes
+      env:
+        GH_TOKEN: ${{ secrets.github_token }}
+      run: |
+        this_version="$( bundle exec rake show-gem-version )"
+        last_gh_release="$( gh api repos/'{owner}'/'{repo}'/releases/latest 2>/dev/null | jq --raw-output .name )"
+        if [ "$last_gh_release" = 'null' ]
+        then
+          last_gh_release="$( git rev-list --max-parents=0 HEAD )"
+        fi
+
+        git diff "$last_gh_release" --no-ext-diff --unified=0 --exit-code -a --no-prefix -- CHANGELOG.md | grep '^+' | grep -v '^+++ CHANGELOG.md$' | sed -e's/^+//' > release_notes.md
+
+        {
+          echo -n unreleased=
+          [ "$this_version" -eq "$last_gh_release" ] && echo false || echo true
+          echo this_version="$this_version"
+        } >> "$GITHUB_OUTPUT"
+    - name: Publish to GitHub Rubygems
+      if: ${{ steps.check-changes.outputs.unreleased == 'true' }}
+      env:
+        GEM_HOST_API_KEY: Bearer ${{ secrets.github_token }}
+      run: |
+        for built_gem in pkg/*
+        do
+
+          echo ::group::Pushing "$(basename "$built_gem")"
+          gem push "$built_gem"
+          echo ::endgroup::
+
+        done
+    - name: Release new version
+      uses: softprops/action-gh-release@v1
+      if: ${{ steps.check-changes.outputs.unreleased == 'true' }}
+      with:
+        body_path: release_notes.md
+        tag_name: v${{ steps.check-changes.outputs.this_version }}
+        files: pkg/*.gem
