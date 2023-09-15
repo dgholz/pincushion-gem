@@ -21,4 +21,6 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir["{lib}/**/*.rb", "bin/*", "LICENSE", "*.md"]
   spec.require_paths = ["lib"]
+
+  spec.add_development_dependency 'rspec'
 end
