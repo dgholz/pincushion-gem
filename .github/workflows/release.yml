@@ -50,7 +50,7 @@ jobs:
 
         {
           echo -n unreleased=
-          [ "$this_version" -eq "$last_gh_release" ] && echo false || echo true
+          [ "$this_version" = "$last_gh_release" ] && echo false || echo true
           echo this_version="$this_version"
         } >> "$GITHUB_OUTPUT"
     - name: Publish to GitHub Rubygems
