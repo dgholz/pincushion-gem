@@ -44,13 +44,16 @@ jobs:
         if [ "$last_gh_release" = 'null' ]
         then
           last_gh_release="$( git rev-list --max-parents=0 HEAD )"
+        else
+          git switch "$last_gh_release"
+          git switch -
         fi
 
         git diff "$last_gh_release" --no-ext-diff --unified=0 --exit-code -a --no-prefix -- CHANGELOG.md | grep '^+' | grep -v '^+++ CHANGELOG.md$' | sed -e's/^+//' > release_notes.md
 
         {
           echo -n unreleased=
-          [ "$this_version" -eq "$last_gh_release" ] && echo false || echo true
+          [ "$this_version" = "$last_gh_release" ] && echo false || echo true
           echo this_version="$this_version"
         } >> "$GITHUB_OUTPUT"
     - name: Publish to GitHub Rubygems
