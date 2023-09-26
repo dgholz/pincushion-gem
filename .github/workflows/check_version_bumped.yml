@@ -10,10 +10,5 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - run: |
-          git fetch --no-tags origin refs/heads/main:refs/head/main
-          echo ::group::Files changed on this branch::
-          git diff --name-only origin/main...HEAD | tee files_changed.log
-          echo ::endgroup::
-
-          grep CHANGELOG.md files_changed.log && grep 'lib/pincushion/version.rb$' files_changed.log
+      - name: Check for version bump
+        uses: dgholz/action-check-version-bump@main
