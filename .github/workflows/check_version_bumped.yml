@@ -1,0 +1,13 @@
+name: Check version & CHANGELOG bumped
+
+on:
+  pull_request:
+
+jobs:
+  runs-on: ubuntu-latest
+  name: check-for-version-bump
+  steps:
+    - uses: actions/checkout@v4
+    - run: |
+      git fetch origin refs/heads/main:refs/head/main
+      git diff --name-only HEAD...master
