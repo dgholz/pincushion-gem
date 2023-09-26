@@ -10,4 +10,8 @@ jobs:
     - uses: actions/checkout@v4
     - run: |
       git fetch origin refs/heads/main:refs/head/main
-      git diff --name-only HEAD...master
+      echo ::group::Files changed on this branch::
+      git diff --name-only main...HEAD | tee files_changed.log
+      echo ::endgroup::
+
+      grep CHANGELOG.md files_changed.log && grep 'lib/pincushion/version.rb$' files_changed.log
