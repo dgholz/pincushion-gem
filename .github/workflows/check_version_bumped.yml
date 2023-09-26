@@ -14,3 +14,4 @@ jobs:
         uses: dgholz/action-check-version-bump@main
         with:
           pr-number: ${{ github.event.pull_request.number }}
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
