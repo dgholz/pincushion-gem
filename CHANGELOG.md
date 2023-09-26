@@ -1,3 +1,7 @@
+# 0.2.1
+
+* Add workflow to warn that version & CHANGELOG weren't bumped
+
 # 0.2.0
 
 * Fix typos in release workflow
