@@ -45,8 +45,7 @@ jobs:
         then
           last_gh_release="$( git rev-list --max-parents=0 HEAD )"
         else
-          git switch "$last_gh_release"
-          git switch -
+          git fetch origin refs/tags/"$last_gh_release":refs/tags/"$last_gh_release"
         fi
 
         git diff "$last_gh_release" --no-ext-diff --unified=0 --exit-code -a --no-prefix -- CHANGELOG.md | grep '^+' | grep -v '^+++ CHANGELOG.md$' | sed -e's/^+//' > release_notes.md
