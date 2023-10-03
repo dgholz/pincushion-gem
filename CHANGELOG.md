@@ -1,3 +1,7 @@
+# 0.3.1
+
+* Use shared version bump check workflow
+
 # 0.3.0
 
 * Use version bump check from shared action
