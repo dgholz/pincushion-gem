@@ -1,3 +1,7 @@
+# 0.3.0
+
+* Use version bump check from shared action
+
 # 0.2.1
 
 * Add workflow to warn that version & CHANGELOG weren't bumped
